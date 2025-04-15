@@ -3,6 +3,8 @@ import requests
 import difflib
 import os
 from datetime import datetime
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 TRUSTED_DNS_SERVERS = ['8.8.8.8', '1.1.1.1', '9.9.9.9']
 REPORTS_DIR = "reports"
