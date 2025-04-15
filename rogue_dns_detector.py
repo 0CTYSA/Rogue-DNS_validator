@@ -88,7 +88,6 @@ def analyze_domain(domain, rogue_dns, report_filename):
         result.append(f"  - curl --header 'Host: {domain}' http://{rogue_ips[0]}")
     
     full_result = "\n".join(result)
-    print(full_result)
     save_to_txt(report_filename, full_result)
     
     return rogue_ips if discrepancies else None
@@ -121,7 +120,6 @@ def main():
             summary.append(f"  → IP {ip} afecta a: {', '.join(domains)}")
         
         full_summary = "\n".join(summary)
-        print(full_summary)
         save_to_txt(report_file, full_summary)
 
     print(f"\n[+] Reporte guardado en: {report_file}")
