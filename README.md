@@ -1,51 +1,67 @@
-# **📌 Rogue DNS & Pharming Detector**
+# 🛡️ Rogue DNS & Pharming Detector
 
-**🔍 Descripción**:  
-Este script automatiza la detección de servidores **Rogue DNS** (DNS maliciosos) y posibles ataques de **Pharming** comparando las respuestas DNS de un servidor sospechoso con servidores confiables (Google, Cloudflare, Quad9).
-
----
-
-## **🚀 Características**
-
-✅ **Interactivo**: Pide los datos por terminal (dominios y IP del DNS sospechoso).  
-✅ **Análisis detallado**: Muestra comparaciones lado a lado entre DNS maliciosos y legítimos.  
-✅ **Comandos `dig`**: Genera automáticamente comandos para verificación manual en Linux/macOS.  
-✅ **Reportes en TXT**: Guarda resultados en `./reports/` con marcas de tiempo.  
-✅ **Detección masiva**: Analiza múltiples dominios en una sola ejecución.
+Un script interactivo que permite detectar posibles ataques de **pharming** mediante la comparación entre resoluciones DNS de un servidor sospechoso y servidores confiables.
 
 ---
 
-## **🛠 Instalación**
+## 🔎 ¿Qué hace este script?
 
-1. **Requisitos**:
+Este analizador realiza los siguientes pasos:
 
-   - Python 3.8+
-   - Biblioteca `dnspython`
-
-2. **Instalar dependencias**:
-   ```bash
-   pip install dnspython
-   ```
+1. **Consulta un dominio usando un DNS sospechoso.**
+2. **Compara los resultados con los de DNS confiables** como Google, Cloudflare y Quad9.
+3. **Verifica si hay diferencias en el contenido HTML**, como formularios de inicio de sesión.
+4. **Genera un reporte detallado** con evidencias técnicas, comandos útiles (`dig`, `curl`) y conclusiones.
 
 ---
 
-## **📋 Uso**
+## ✅ Características
 
-### **1. Ejecución básica**:
+- 🔹 Entrada por terminal (dominios y DNS sospechoso).
+- 🔹 Detección automatizada de posibles ataques de pharming.
+- 🔹 Análisis de diferencias clave en formularios HTML (`<form>`, `login`, `password`, etc.).
+- 🔹 Comandos útiles para análisis manual (`dig`, `curl`).
+- 🔹 Reportes generados automáticamente en la carpeta `reports/`.
+
+---
+
+## ⚙️ Requisitos
+
+- Python 3.8+
+- Módulos:
+  - `dnspython`
+  - `requests`
+
+Instala las dependencias necesarias con:
 
 ```bash
-python rogue_dns_detector_pro.py
+pip install dnspython requests
 ```
 
-- **Ejemplo de entrada**:
-  ```plaintext
-  Ingrese la IP del DNS sospechoso (ej. 45.55.197.218): 45.55.197.218
-  Ingrese dominios a verificar (separados por coma, ej. banco.com,paypal.com): banco.com,paypal.com
-  ```
+---
 
-### **2. Salida en terminal**:
+## 🚀 Cómo usar
+
+Ejecuta el script desde terminal:
+
+```bash
+python rogue_dns_detector.py
+```
+
+Ejemplo de entrada:
 
 ```plaintext
+Ingrese IP del DNS sospechoso: 45.55.197.218
+Ingrese dominios (separados por coma): banco.com,paypal.com
+```
+
+---
+
+## 📤 Salida esperada
+
+Ejemplo de análisis:
+
+```
 ==================================================
 [*] DOMINIO: banco.com
 ==================================================
@@ -60,55 +76,68 @@ python rogue_dns_detector_pro.py
 [!] CONCLUSIÓN: POSIBLE PHARMING (IPs diferentes)
 
 [+] COMANDOS DIG PARA VERIFICACIÓN MANUAL:
-  - DNS sospechoso: dig banco.com @45.55.197.218 +short
-  - DNS confiable (8.8.8.8): dig banco.com @8.8.8.8 +short
-  - DNS confiable (1.1.1.1): dig banco.com @1.1.1.1 +short
+  - dig banco.com @45.55.197.218 +short
+  - dig banco.com @8.8.8.8 +short
+
+[!] DETECTANDO DIFERENCIAS CLAVE EN HTML...
+
+[diferencias en formularios/login]:
+--- LEGITIMO
++++ FRAUDULENTO
+- <form action="/login" method="post">
++ <form action="http://phishingsite.com/fake" method="post">
+
+[+] COMANDOS PARA VERIFICACIÓN MANUAL:
+  - curl --header 'Host: banco.com' http://182.189.112.153
 ```
 
-### **3. Reportes automáticos**:
+---
 
-Los resultados se guardan en:
+## 🗂 Reportes
 
-```bash
-./reports/report_20231025_143022.txt  # Formato: report_AAAAMMDD_HHMMSS.txt
+Los reportes se guardan automáticamente en la carpeta `./reports/` con nombre:
+
+```
+report_YYYYMMDD_HHMMSS.txt
 ```
 
----
+Incluyen:
 
-## **🛡️ ¿Qué es un Rogue DNS?**
-
-Un **DNS malicioso** redirige tráfico legítimo a sitios falsos (ej: `banco.com` → IP fraudulenta). A diferencia del _phishing_, el dominio en la barra de direcciones **es el mismo**, pero la IP es falsa.
-
----
-
-## **🔍 Método de Detección**
-
-El script compara las IPs resueltas por:
-
-1. **DNS sospechoso** (ej: `45.55.197.218`).
-2. **DNS confiables** (Google `8.8.8.8`, Cloudflare `1.1.1.1`).
-
-Si hay diferencias, se marca como **posible pharming**.
+- Análisis por dominio.
+- Comparación de IPs.
+- Detección de diferencias en HTML.
+- Comandos sugeridos (`dig`, `curl`).
+- Resumen de IPs maliciosas detectadas.
 
 ---
 
-## **💡 Ejemplo de Ataque**
+## 📚 ¿Qué es un ataque de pharming?
 
-| Dominio    | DNS Malicioso   | DNS Legítimo   | Conclusión          |
-| ---------- | --------------- | -------------- | ------------------- |
-| banco.com  | 182.189.112.153 | 104.18.25.63   | ❗ POSIBLE PHARMING |
-| google.com | 142.250.190.46  | 142.250.190.46 | ✅ OK               |
+Es una técnica donde un atacante redirige el tráfico hacia un sitio fraudulento **sin cambiar el dominio visible**. Lo hace manipulando la resolución DNS, por eso es tan difícil de detectar solo visualmente.
 
 ---
 
-## **📌 Notas**
+## 🧪 Método de detección utilizado
 
-- **Linux/macOS**: Usa `dig` para verificación manual (incluido en el reporte).
-- **Windows**: Puedes usar `nslookup` (no tan preciso como `dig`).
-- **DNSSEC**: Para mayor seguridad, usa servidores con DNSSEC habilitado (ej: `1.1.1.1`).
+| Paso | Descripción                                  |
+| ---- | -------------------------------------------- |
+| 1    | Resolver dominio con el DNS sospechoso       |
+| 2    | Resolver el mismo dominio con DNS confiables |
+| 3    | Detectar diferencias en IPs                  |
+| 4    | Verificar diferencias en HTML (formularios)  |
 
 ---
 
-## **📜 Licencia**
+## 📝 Notas adicionales
 
-MIT License - Libre para uso y modificación.
+- Este script **no requiere privilegios de administrador**.
+- Ideal para análisis en equipos SOC, laboratorios de ciberseguridad o cursos de hacking ético.
+- Funciona en Windows, Linux y macOS.
+- Las solicitudes HTTP ignoran certificados SSL para facilitar análisis contra IPs sin HTTPS (no recomendado en entornos de producción).
+
+---
+
+## 🧑‍💻 Autor y Licencia
+
+- 📄 Licencia: MIT
+- 🔧 Puedes modificar libremente este código.
