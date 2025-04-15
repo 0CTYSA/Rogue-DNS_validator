@@ -27,13 +27,18 @@ def resolve_domain(domain, dns_server):
         return None
 
 def analyze_domain(domain, rogue_dns, report_filename):
-    """Analiza un dominio y guarda resultados detallados."""
     rogue_ips = resolve_domain(domain, rogue_dns)
     if not rogue_ips:
         error_msg = f"[!] Error al resolver {domain} con el DNS sospechoso."
         print(error_msg)
         save_to_txt(report_filename, error_msg)
         return None
+
+    # Generar comandos dig para verificación manual
+    dig_commands = "\n[+] COMANDOS DIG PARA VERIFICACIÓN MANUAL:\n"
+    dig_commands += f"  - DNS sospechoso: dig {domain} @{rogue_dns} +short\n"
+    for trusted_server in TRUSTED_DNS_SERVERS:
+        dig_commands += f"  - DNS confiable ({trusted_server}): dig {domain} @{trusted_server} +short\n"
 
     result = f"\n{'='*50}\n[*] DOMINIO: {domain}\n{'='*50}\n"
     result += f"[+] DNS SOSPECHOSO ({rogue_dns}):\n    → IP: {', '.join(rogue_ips)}\n\n"
@@ -51,6 +56,7 @@ def analyze_domain(domain, rogue_dns, report_filename):
 
     conclusion = "\n[!] CONCLUSIÓN: " + ("POSIBLE PHARMING (IPs diferentes)" if discrepancies else "OK (IPs coincidentes)")
     result += conclusion + "\n"
+    result += dig_commands  # 👈 Agrega los comandos dig al resultado
 
     save_to_txt(report_filename, result)
     return rogue_ips if discrepancies else None
