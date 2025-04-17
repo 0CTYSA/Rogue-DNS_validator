@@ -6,7 +6,7 @@ from datetime import datetime
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-TRUSTED_DNS_SERVERS = ['8.8.8.8', '1.1.1.1', '9.9.9.9']
+TRUSTED_DNS_SERVERS = ['8.8.8.8', '1.1.1.1', '9.9.9.9','76.76.2.0','208.67.222.222','94.140.14.14','185.228.168.9','76.76.19.19']
 REPORTS_DIR = "reports"
 TIMEOUT = 5
 
